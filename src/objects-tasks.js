@@ -71,8 +71,11 @@ function mergeObjects(objects) {
  *    removeProperties({name: 'John', age: 30, city: 'New York'}, ['age']) => {name: 'John', city: 'New York'}
  *
  */
-function removeProperties(/* obj, keys */) {
-  throw new Error('Not implemented');
+function removeProperties(obj, keys) {
+  const copyObj = { ...obj };
+  keys.forEach((key) => delete copyObj[key]);
+
+  return copyObj;
 }
 
 /**
@@ -87,8 +90,8 @@ function removeProperties(/* obj, keys */) {
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 2}) => true
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 3}) => false
  */
-function compareObjects(/* obj1, obj2 */) {
-  throw new Error('Not implemented');
+function compareObjects(obj1, obj2) {
+  return Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
 }
 
 /**
@@ -102,8 +105,8 @@ function compareObjects(/* obj1, obj2 */) {
  *    isEmptyObject({}) => true
  *    isEmptyObject({a: 1}) => false
  */
-function isEmptyObject(/* obj */) {
-  throw new Error('Not implemented');
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0;
 }
 
 /**
@@ -122,8 +125,8 @@ function isEmptyObject(/* obj */) {
  *    immutableObj.newProp = 'new';
  *    console.log(immutableObj) => {a: 1, b: 2}
  */
-function makeImmutable(/* obj */) {
-  throw new Error('Not implemented');
+function makeImmutable(obj) {
+  return Object.freeze(obj);
 }
 
 /**
@@ -136,8 +139,15 @@ function makeImmutable(/* obj */) {
  *    makeWord({ a: [0, 1], b: [2, 3], c: [4, 5] }) => 'aabbcc'
  *    makeWord({ H:[0], e: [1], l: [2, 3, 8], o: [4, 6], W:[5], r:[7], d:[9]}) => 'HelloWorld'
  */
-function makeWord(/* lettersObject */) {
-  throw new Error('Not implemented');
+function makeWord(lettersObject) {
+  const resultArr = [];
+  Object.keys(lettersObject).forEach((key) => {
+    lettersObject[key].forEach((charPos) => {
+      resultArr[charPos] = key;
+    });
+  });
+
+  return resultArr.join('');
 }
 
 /**
@@ -154,8 +164,39 @@ function makeWord(/* lettersObject */) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const TICKET_COST = 25;
+  let doesEveryoneBuy = true;
+  const cash = {
+    25: 0,
+    50: 0,
+    100: 0,
+  };
+
+  queue.forEach((bill) => {
+    cash[bill] += 1;
+    const change = bill - TICKET_COST;
+
+    if (change === 25 && doesEveryoneBuy) {
+      doesEveryoneBuy = cash['25'] > 0;
+
+      if (doesEveryoneBuy) {
+        cash['25'] -= 1;
+      }
+    }
+
+    if (change === 75 && doesEveryoneBuy) {
+      if (cash['50'] > 0 && cash['25'] > 0) {
+        cash['50'] -= 1;
+        cash['25'] -= 1;
+      } else if (cash['50'] === 0 && cash['25'] > 2) {
+        cash['25'] -= 3;
+      } else {
+        doesEveryoneBuy = false;
+      }
+    }
+  });
+  return doesEveryoneBuy;
 }
 
 /**
